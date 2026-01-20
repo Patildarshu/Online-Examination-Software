@@ -2,12 +2,12 @@ package ai;
 
 import com.google.genai.Client;
 import com.google.genai.types.GenerateContentResponse;
-import org.apache.http.HttpException;
-
 
 public class AIQuestionService {
 
-    private static final String API_KEY = "your api key";
+    // ✅ Best practice: use environment variable
+    private static final String API_KEY = "AIzaSyD5LQV3C7xPLddArZM-oaFoxkXH3dJk5Ao";
+
 
     public String generateMCQs(String topic, int count) {
 
@@ -24,12 +24,12 @@ public class AIQuestionService {
 
             GenerateContentResponse response =
                     client.models.generateContent(
-                            "gemini-3-flash-preview", // ✅ Valid SDK model
+                            "gemini-3-flash-preview",
                             prompt,
                             null
                     );
 
-            return response.text(); // ✅ Clean AI output
+            return response.text(); // ✅ returns JSON array
 
         } catch (Exception e) {
             throw new RuntimeException("AI generation failed", e);

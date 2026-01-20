@@ -5,8 +5,8 @@ import java.util.Scanner;
 
 import ai.AIQuestionService;
 import ai.QuestionParserService;
+import auth.AuthService;
 import db.DBConnection;
-
 
 public class AdminService {
 
@@ -19,27 +19,36 @@ public class AdminService {
             System.out.println("1. Add Question (Manual)");
             System.out.println("2. View Results");
             System.out.println("3. Reset Student Exam");
-            System.out.println("4. Exit");
+            System.out.println("4. Reset Student Password");
             System.out.println("5. Generate Questions using AI");
+            System.out.println("6. Exit");
 
+            System.out.print("Enter choice: ");
             int ch = sc.nextInt();
 
             switch (ch) {
+
                 case 1:
                     addQuestion();
                     break;
+
                 case 2:
                     viewResults();
                     break;
+
                 case 3:
                     resetExam();
                     break;
+
                 case 4:
-                    return;
+                    AuthService auth = new AuthService();
+                    auth.resetStudentPassword();
+                    break;
+
                 case 5:
                     try {
+                        sc.nextLine();
                         System.out.print("Enter Topic: ");
-                        sc.nextLine(); // clear buffer
                         String topic = sc.nextLine();
 
                         System.out.print("Number of Questions: ");
@@ -59,11 +68,18 @@ public class AdminService {
                     }
                     break;
 
+                case 6:
+                    return;
+
+                default:
+                    System.out.println("Invalid choice!");
             }
         }
     }
 
+    // ================= ADD QUESTION =================
     public void addQuestion() {
+
         sc.nextLine();
         System.out.print("Question: ");
         String q = sc.nextLine();
@@ -76,6 +92,7 @@ public class AdminService {
         String o3 = sc.nextLine();
         System.out.print("Option 4: ");
         String o4 = sc.nextLine();
+
         System.out.print("Correct Option (1-4): ");
         int correct = sc.nextInt();
 
@@ -84,6 +101,7 @@ public class AdminService {
             PreparedStatement ps = con.prepareStatement(
                     "INSERT INTO questions VALUES(NULL,?,?,?,?,?,?)"
             );
+
             ps.setString(1, q);
             ps.setString(2, o1);
             ps.setString(3, o2);
@@ -99,7 +117,9 @@ public class AdminService {
         }
     }
 
+    // ================= VIEW RESULTS =================
     public void viewResults() {
+
         try {
             Connection con = DBConnection.getConnection();
             Statement st = con.createStatement();
@@ -111,12 +131,15 @@ public class AdminService {
             while (rs.next()) {
                 System.out.println(rs.getString(1) + " → Score: " + rs.getInt(2));
             }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
+    // ================= RESET EXAM =================
     public void resetExam() {
+
         System.out.print("Enter Student Username: ");
         String user = sc.next();
 
@@ -125,6 +148,7 @@ public class AdminService {
             PreparedStatement ps = con.prepareStatement(
                     "DELETE FROM results WHERE user_id=(SELECT id FROM users WHERE username=?)"
             );
+
             ps.setString(1, user);
             ps.executeUpdate();
 
