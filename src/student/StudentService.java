@@ -1,39 +1,35 @@
 package student;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.util.Scanner;
 import db.DBConnection;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 
 public class StudentService {
 
-    public void startExam() {
-        Scanner sc = new Scanner(System.in);
-        int score = 0;
+    // Show only ACTIVE subjects (like college exam schedule)
+    public void showAvailableSubjects() {
 
         try {
             Connection con = DBConnection.getConnection();
-            Statement st = con.createStatement();
-            ResultSet rs = st.executeQuery("SELECT * FROM questions");
+            PreparedStatement ps = con.prepareStatement(
+                    "SELECT name FROM subjects WHERE active = TRUE"
+            );
 
+            ResultSet rs = ps.executeQuery();
+
+            System.out.println("\n--- AVAILABLE SUBJECT EXAMS ---");
+
+            boolean found = false;
             while (rs.next()) {
-                System.out.println("\n" + rs.getString("question"));
-                System.out.println("1. " + rs.getString("option1"));
-                System.out.println("2. " + rs.getString("option2"));
-                System.out.println("3. " + rs.getString("option3"));
-                System.out.println("4. " + rs.getString("option4"));
-
-                System.out.print("Your Answer: ");
-                int ans = sc.nextInt();
-
-                if (ans == rs.getInt("correct_option")) {
-                    score++;
-                }
+                System.out.println("• " + rs.getString("name"));
+                found = true;
             }
 
-            System.out.println("\nExam Finished!");
-            System.out.println("Your Score: " + score);
+            if (!found) {
+                System.out.println("No exams available right now.");
+            }
 
         } catch (Exception e) {
             e.printStackTrace();

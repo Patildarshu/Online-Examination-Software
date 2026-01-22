@@ -2,6 +2,7 @@ import auth.AuthService;
 import admin.AdminService;
 import exam.ExamService;
 import result.ResultService;
+import student.StudentService;
 
 import java.util.Scanner;
 
@@ -42,19 +43,24 @@ public class Main {
                 else if (menuChoice == 2) {
 
                     if (auth.role.equals("admin")) {
-                        AdminService admin = new AdminService();
-                        admin.adminMenu();
+                        new AdminService().adminMenu();
                     }
                     else {
+                        StudentService studentService = new StudentService();
+                        studentService.showAvailableSubjects();
+
+                        System.out.print("Enter Subject Name: ");
+                        String subject = sc.next();
+
                         ResultService resultService = new ResultService();
 
-                        if (resultService.hasAttempted(auth.userId)) {
-                            System.out.println("❌ You have already attempted the exam.");
+                        if (resultService.hasAttempted(auth.userId, subject)) {
+                            System.out.println("❌ You already attempted " + subject);
                         } else {
                             ExamService exam = new ExamService();
-                            int score = exam.startExam();
+                            int score = exam.startExam(subject);
 
-                            resultService.saveResult(auth.userId, score);
+                            resultService.saveResult(auth.userId, subject, score);
                             System.out.println("Your Score: " + score);
                         }
                     }
@@ -65,7 +71,6 @@ public class Main {
                     System.out.println("Logged out successfully.");
                     break;
                 }
-
                 else {
                     System.out.println("Invalid choice");
                 }

@@ -6,10 +6,7 @@ import db.DBConnection;
 import java.security.MessageDigest;
 
 public class AuthService {
-    public static void main(String[] args) {
-        AuthService auth = new AuthService();
-        System.out.println(auth.hashPassword("Temp@101"));
-    }
+
     Scanner sc = new Scanner(System.in);
 
     public int userId;
@@ -31,7 +28,6 @@ public class AuthService {
                     "SELECT * FROM users WHERE username=? AND password=? AND active=TRUE"
             );
 
-            // ✅ BOTH parameters MUST be set
             ps.setString(1, username);
             ps.setString(2, hashPassword(password));
 
@@ -47,7 +43,6 @@ public class AuthService {
                 if (firstLogin) {
                     forcePasswordChange(userId);
                 }
-
                 return true;
             }
 
@@ -58,7 +53,6 @@ public class AuthService {
         System.out.println("Invalid Login!");
         return false;
     }
-
 
     // ================= FORCE PASSWORD CHANGE =================
     private void forcePasswordChange(int userId) {
@@ -88,7 +82,7 @@ public class AuthService {
         }
     }
 
-    // ================= CHANGE PASSWORD (OPTIONAL) =================
+    // ================= CHANGE PASSWORD =================
     public void changePassword(int userId) {
 
         System.out.print("Enter New Password: ");
@@ -112,7 +106,7 @@ public class AuthService {
     }
 
     // ================= PASSWORD HASHING =================
-    private String hashPassword(String password) {
+    public String hashPassword(String password) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
             byte[] bytes = md.digest(password.getBytes());
@@ -158,6 +152,4 @@ public class AuthService {
             e.printStackTrace();
         }
     }
-
-
 }
